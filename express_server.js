@@ -1,5 +1,6 @@
 var bodyParser = require("body-parser");
 var express = require("express");
+var cookieParser = require('cookie-parser')
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 
@@ -12,6 +13,8 @@ var urlDatabase = {
 };
 
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cookieParser())
 
 app.get("/", (req, res) => {
   res.end("Hello!");
