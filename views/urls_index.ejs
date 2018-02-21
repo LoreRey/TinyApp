@@ -10,9 +10,15 @@
         <th>List of URLs</th>
       </tr>
       <% for (let shortURL in urls) { %>
-        <tr>
-          <td><%= shortURL %>:</td>
-          <td><%= urls[shortURL] %></td>
+      <tr>
+        <td><%= shortURL %>: <a href="http://<%= urls[shortURL] %>"> <%= urls[shortURL] %></a></td>
+        <td><a href="/urls/<%= shortURL %>">Edit</a></td>
+        <td>
+          <form method="POST" action="/urls/<%= shortURL %>/delete"/ >
+              <button>Delete</button>
+          </form>
+        </td>
+      </tr>
       <% } %>
     </table>
 </body>
