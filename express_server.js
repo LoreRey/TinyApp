@@ -1,17 +1,20 @@
-var bodyParser = require("body-parser");
-var express = require("express");
-var cookieParser = require('cookie-parser')
-var app = express();
-var PORT = process.env.PORT || 8080; // default port 8080
+const bodyParser = require("body-parser");
+const express = require("express");
+const cookieParser = require('cookie-parser')
+const app = express();
+const PORT = process.env.PORT || 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
+//********DATABASES********//
+
 //data to show on the URLs page. To pass to template.
-var urlDatabase = {
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+//users database
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -24,6 +27,8 @@ const users = {
     password: "dishwasher-funk"
   }
 };
+
+//********HANDLERS********//
 
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -63,7 +68,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  var shortURL = generateRandomString()
+  let shortURL = generateRandomString()
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
@@ -89,9 +94,17 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  var userID = generateRandomString();
-  var userEmail = req.body.email;
-  var userPass = req.body.password
+  if(!req.body.email || !req.body.password) {
+    res.status(400).send("Required e-mail and password!")
+  }
+    for(let id in users) {
+      if(req.body.email === users[id].email) {
+        return res.status(400).send("This email already exists!");
+      }
+    }
+    let userID = generateRandomString();
+    let userEmail = req.body.email;
+    let userPass = req.body.password
   users[userID] = {"id": userID, "email": userEmail, "password": userPass};
   console.log(users);
   res.cookie('userID', userID)
@@ -113,10 +126,12 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
+//********FUNCTIONS********//
+
 function generateRandomString() {
-  var RandomString = "";
-  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for(var i = 0; i < 6; i++)
+  let RandomString = "";
+  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for(let i = 0; i < 6; i++)
     RandomString += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return RandomString;
