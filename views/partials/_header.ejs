@@ -2,9 +2,16 @@
 <h1>TinyApp Project</h1>
 </header>
 <body>
-  <h2>Hello, <%= username %>!</h2>
+  <% if (username) { %>
+  <form method="POST" action="/logout" style="padding-bottom:30px;">
+    <!--<input type="text" name="username" placeholder=Username>-->
+    <h2>Hello, <%= username %>!</h2>
+    <button>Logout</button>
+  </form>
+  <% } else { %>
   <form method="POST" action="/login" style="padding-bottom:30px;">
     <input type="text" name="username" placeholder=Username>
     <button>Submit</button>
   </form>
+<% }; %>
 </body>
