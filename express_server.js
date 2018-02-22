@@ -12,6 +12,19 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+};
+
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(cookieParser())
@@ -49,10 +62,6 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get('/register', (req, res) => {
-  res.render("register");
-});
-
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString()
   urlDatabase[shortURL] = req.body.longURL;
@@ -73,6 +82,20 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL;
   res.redirect("/urls/");
+});
+
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+app.post("/register", (req, res) => {
+  var userID = generateRandomString();
+  var userEmail = req.body.email;
+  var userPass = req.body.password
+  users[userID] = {"id": userID, "email": userEmail, "password": userPass};
+  console.log(users);
+  res.cookie('userID', userID)
+  res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
