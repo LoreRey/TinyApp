@@ -49,6 +49,10 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get('/register', (req, res) => {
+  res.render("register");
+});
+
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString()
   urlDatabase[shortURL] = req.body.longURL;
