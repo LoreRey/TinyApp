@@ -2,10 +2,15 @@
 <h1>TinyApp Project</h1>
 </header>
 <body>
-  <% if (username) { %>
+  <td>
+    <form action="/Register">
+      <button>Register</button>
+    </form>
+  </td>
+  <!--<% if (user) { %>
   <form method="POST" action="/logout" style="padding-bottom:30px;">
-    <!--<input type="text" name="username" placeholder=Username>-->
-    <h2>Hello, <%= username %>!</h2>
+    <input type="text" name="username" placeholder=Username>
+    <h2>Hello, <%= user.email %>!</h2>
     <button>Logout</button>
   </form>
   <% } else { %>
@@ -13,5 +18,4 @@
     <input type="text" name="username" placeholder=Username>
     <button>Submit</button>
   </form>
-<% }; %>
-</body>
+<% }; %>-->

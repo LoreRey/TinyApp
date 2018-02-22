@@ -48,13 +48,13 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase,
-                       username: req.cookies["username"]
+                       user: users[req.cookies.userID]
                      };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req.cookies["username"]
+  let templateVars = { user: users[req.cookies.userID]
                      };
   res.render("urls_new", templateVars);
 });
@@ -62,7 +62,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id,
                       longURL: urlDatabase[req.params.id],
-                      username: req.cookies["username"]
+                      user: users[req.cookies.userID]
                       };
   res.render("urls_show", templateVars);
 });
@@ -111,10 +111,22 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username)
+  //res.cookie('username', req.body.username)
   //console.log(req.body.username)
-  res.redirect("/urls");
+  let userIdMatch = findUserByEmail(req.body.email);
+  if (!userIdMatch) {
+    res.status(403).send("Email is invalid!")
+  } else if (!hasUserPass(req.body.email, req.body.password)) {
+    res.status(403).send("Password is invalid!")
+  } else {
+    res.cookie('userID', userIdMatch);
+    res.redirect("/urls");
+  }
 });
 
 app.post("/logout", (req, res) => {
@@ -135,4 +147,23 @@ function generateRandomString() {
     RandomString += possible.charAt(Math.floor(Math.random() * possible.length));
 
   return RandomString;
+}
+
+function hasUserPass(email, password) {
+  for (let user in users) {
+    if (users[user].email === email) {
+      if (users[user].password === password) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function findUserByEmail(email) {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return users[user].id
+    }
+  }
 }
