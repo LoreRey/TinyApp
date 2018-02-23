@@ -51,9 +51,10 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase.local,
-                       user: users[req.cookies.userID]
-                     };
+  let templateVars = {
+    userUrls: urlDatabase[req.cookies.userID],
+    user: users[req.cookies.userID]
+  }
   res.render("urls_index", templateVars);
 });
 
@@ -87,16 +88,14 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-
-
 app.get("/u/:shortURL", (req, res) => {
   //console.log(urlDatabase)
-  let longURL = urlDatabase[req.params.shortURL]
-  res.redirect(longURL);
+  let tinyURL = accessURL(req.params.shortURL);
+  res.redirect(tinyURL);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id]
+  delete urlDatabase[req.cookies.userID][req.params.id]
   res.redirect("/urls/");
 });
 
@@ -181,6 +180,14 @@ function findUserByEmail(email) {
   for (let user in users) {
     if (users[user].email === email) {
       return users[user].id
+    }
+  }
+}
+
+function accessURL(URL) {
+  for (let shortCode in urlDatabase) {
+    if (urlDatabase[shortCode][URL]) {
+      return (urlDatabase[shortCode][URL])
     }
   }
 }
