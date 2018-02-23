@@ -1,10 +1,18 @@
 const bodyParser = require("body-parser");
 const express = require("express");
-const cookieParser = require('cookie-parser')
 const app = express();
 const PORT = process.env.PORT || 8080; // default port 8080
+const cookieSession = require('cookie-session')
+const bcrypt = require('bcrypt');
 
 app.set("view engine", "ejs");
+
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ['']
+}));
 
 //********DATABASES********//
 
@@ -34,9 +42,6 @@ const users = {
 
 //********HANDLERS********//
 
-app.use(bodyParser.urlencoded({extended: true}));
-
-app.use(cookieParser())
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -119,11 +124,11 @@ app.post("/register", (req, res) => {
     }
     let userID = generateRandomString();
     let userEmail = req.body.email;
-    let userPass = req.body.password
-  users[userID] = {"id": userID, "email": userEmail, "password": userPass};
-  console.log(users);
-  res.cookie('userID', userID)
-  res.redirect("/urls");
+    let userPass = req.body.password;
+    users[userID] = {"id": userID, "email": userEmail, "password": bcrypt.hashSync(userPass, 10)};
+    console.log(users);
+    res.cookie('userID', userID)
+    res.redirect("/urls");
 });
 
 app.get("/login", (req, res) => {
@@ -133,7 +138,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   //res.cookie('username', req.body.username)
   //console.log(req.body.username)
-  let userIdMatch = findUserByEmail(req.body.email);
+  const userIdMatch = findUserByEmail(req.body.email);
   if (!userIdMatch) {
     res.status(403).send("Email is invalid!")
   } else if (!hasUserPass(req.body.email, req.body.password)) {
@@ -158,7 +163,7 @@ app.listen(PORT, () => {
 
 function generateRandomString() {
   let RandomString = "";
-  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+   possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for(let i = 0; i < 6; i++)
     RandomString += possible.charAt(Math.floor(Math.random() * possible.length));
 
@@ -168,7 +173,7 @@ function generateRandomString() {
 function hasUserPass(email, password) {
   for (let user in users) {
     if (users[user].email === email) {
-      if (users[user].password === password) {
+      if (bcrypt.compareSync(password, users[user].password)) {
         return true;
       }
     }
