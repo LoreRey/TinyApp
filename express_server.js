@@ -79,7 +79,7 @@ app.get("/urls/new", (req, res) => {
     }
 });
 
-//Displayes shortURL page for users to edit new URL.
+//Displays shortURL page for users to edit new URL.
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
