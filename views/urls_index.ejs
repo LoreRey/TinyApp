@@ -6,10 +6,10 @@
 <body>
   <header><% include ./partials/_header.ejs %></header>
     <table class="table">
-      <p><a href="/urls/new"=/urls/new" >Create a new short URL</a></p>
+      <p><a href="/urls/new"=/urls/new" >Create a new TinyURL</a></p>
       <tr>
         <% if (user) { %>
-      <th>Your short URLs</th>
+      <th>Your TinyURLs</th>
     <% } %>
     </tr>
       <% for (let shortURL in userUrls) { %>

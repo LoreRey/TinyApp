@@ -7,7 +7,7 @@
   <header><% include ./partials/_header.ejs %></header>
   <form action="/urls/<%= shortURL %>" method="POST" >
      <!--<h3>Long Link :</h3>-->
-     <h3>Short Link : <%= shortURL %> <%= longURL %></h3>
+     <h3>TinyURL : <%= shortURL %> ➡️ <%= longURL %></h3>
      <input id="longURL" type="text" name="longURL" value= "<%=longURL %>">
      <input type="submit" value="Update">
   </form>
