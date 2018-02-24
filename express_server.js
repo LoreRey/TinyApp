@@ -5,18 +5,17 @@ const PORT = process.env.PORT || 8080; // default port 8080
 const cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
 
-app.set("view engine", "ejs");
-
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(cookieSession({
-  name: 'session',
-  keys: ['']
+  name: 'userID',
+  secret: 'fhewfhwkejfw'
 }));
+
+app.set("view engine", "ejs");
 
 //********DATABASES********//
 
-//data to show on the URLs page. To pass to template.
 const urlDatabase = {
   "userRandomID": {
     "b2xVn2": "http://www.lighthouselabs.ca"
@@ -26,8 +25,10 @@ const urlDatabase = {
   }
 };
 
+const users = {};
+
 //users database
-const users = {
+/*const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
@@ -38,7 +39,7 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-};
+}; */
 
 //********HANDLERS********//
 
@@ -55,6 +56,8 @@ app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+//Renders urls_index page where all user shortened URLs are displayed.
+
 app.get("/urls", (req, res) => {
   let templateVars = {
     userUrls: urlDatabase[req.session.userID],
@@ -62,6 +65,8 @@ app.get("/urls", (req, res) => {
   }
   res.render("urls_index", templateVars);
 });
+
+//Renders urls_new for users to input a longURL to be shortened.
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
@@ -74,13 +79,18 @@ app.get("/urls/new", (req, res) => {
     }
 });
 
+//Displayes shortURL page for users to edit new URL.
+
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                       longURL: urlDatabase[req.params.id],
-                       user: users[req.session.userID]
-                      };
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    user: users[req.session.userID]
+    }
   res.render("urls_show", templateVars);
 });
+
+//Generates shortURL, saves it, and associates it with the user.
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString()
@@ -94,25 +104,35 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+//Allows non-users to click on shortURL and directs to longURL.
+
 app.get("/u/:shortURL", (req, res) => {
-  //console.log(urlDatabase)
   let tinyURL = accessURL(req.params.shortURL);
   res.redirect(tinyURL);
 });
+
+//User can delete own created shortURLs.
 
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.session.userID][req.params.id]
   res.redirect("/urls/");
 });
 
+//User can update URL, which then redirects to /urls.
+
 app.post("/urls/:id", (req, res) => {
   urlDatabase[req.session.userID][req.params.id] = req.body.longURL;
   res.redirect("/urls/");
 });
 
+//Registration page for users to create a new account.
+
 app.get("/register", (req, res) => {
   res.render("register");
 });
+
+//Checks if entered email already exists. If not, it adds the new user
+//to the database, and sets a cookie.
 
 app.post("/register", (req, res) => {
   if(!req.body.email || !req.body.password) {
@@ -132,13 +152,16 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
 });
 
+//Renders the Login page for returning users.
+
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
+//Checks if email and password entered are valid/match before setting
+//the cookie.
+
 app.post("/login", (req, res) => {
-  //res.cookie('username', req.body.username)
-  //console.log(req.body.username)
   const userIdMatch = findUserByEmail(req.body.email);
   if (!userIdMatch) {
     res.status(403).send("Email is invalid!")
@@ -150,9 +173,10 @@ app.post("/login", (req, res) => {
   }
 });
 
+//Logged-in users can logout. Cookie gets cleared.
+
 app.post("/logout", (req, res) => {
-  //res.clearCookie('username');
-  req.session.userID = null;
+  res.clearCookie("userID");
   res.redirect("/urls");
 });
 

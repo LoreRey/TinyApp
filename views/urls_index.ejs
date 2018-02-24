@@ -5,11 +5,13 @@
 </head>
 <body>
   <header><% include ./partials/_header.ejs %></header>
-  <p><a href="/urls/new"=/urls/new" >Create a new short URL</a></p>
     <table class="table">
+      <p><a href="/urls/new"=/urls/new" >Create a new short URL</a></p>
       <tr>
-        <th>List of URLs</th>
-      </tr>
+        <% if (user) { %>
+      <th>Your short URLs</th>
+    <% } %>
+    </tr>
       <% for (let shortURL in userUrls) { %>
       <tr>
         <td><%= shortURL %>: <a href="http://<%= userUrls[shortURL] %>"> <%= userUrls[shortURL] %></a></td>

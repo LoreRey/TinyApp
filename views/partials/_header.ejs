@@ -1,5 +1,5 @@
 <header>
-  <h1>TinyApp Project</h1>
+  <h1>TinyApp</h1>
   <% if (user) { %>
   <h3>Hello, <%= user.email %></h3>
   <form method="POST" action="/logout">
@@ -7,20 +7,8 @@
   </form>
   <% } else { %>
   <ul>
-    <a href="/Login">Login</a>
-    <a href="/Register">Register</a>
+    <button><a href="/Login">Login</a></button>
+    <button><a href="/Register">Register</a></button>
   </ul>
   <% } %>
 </header>
-  <!--<% if (user) { %>
-  <form method="POST" action="/logout" style="padding-bottom:30px;">
-    <input type="text" name="username" placeholder=Username>
-    <h2>Hello, <%= user.email %>!</h2>
-    <button>Logout</button>
-  </form>
-  <% } else { %>
-  <form method="POST" action="/login" style="padding-bottom:30px;">
-    <input type="text" name="username" placeholder=Username>
-    <button>Submit</button>
-  </form>
-<% }; %>-->
